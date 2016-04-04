@@ -1,20 +1,34 @@
-#!/usr/bin/env python 
-
+#!/usr/bin/env python
 import numpy as np 
 import matplotlib.pyplot as plt
 import seaborn as sns
-from prody import *
+from prody import * #don't pollute the namespace just keep prody object they way they are
 import pandas as pd
 
 
 
-pdbid = '5pnt'
-n = 158
+pdbid = '5pnt' #Doesn't make sense
+n = 158 #magic number
 #how to choose the correct value for n?
 
 
 # ##Build kirchoff matrix using EVfold contacts
 def build_kirchhoff(n):
+    """
+    Creates a kirchoff matrix using EVfold contacts
+
+    Input
+    -----
+    evfold input file: str
+       file from evfold
+    n: size of the square matrix
+
+    Output
+    ------
+    kirchoff: NxN numpy matrix
+       output matrix
+    """
+
     chain = []
     chain_connection = np.zeros((n,n))
     
@@ -48,7 +62,7 @@ def build_kirchhoff(n):
         
     #assign a -1 for EC pairs
     evol = []
-    contact_pairs = open('./data/5pnt_MI_DI.txt', 'rU').readlines()
+    contact_pairs = open('./data/5pnt_MI_DI.txt', 'rU').readlines() #Get rid of this hard code
     evol_const = np.zeros((n,n))
     for line in contact_pairs:
         a = line.split()
@@ -80,55 +94,58 @@ def build_kirchhoff(n):
     f.close()
     
     return kirchhoff;
-build_kirchhoff(n)
 
+build_kirchhoff(n) #this part of the code is called but the matrix isn't saved.
 
 # ##Calculate square fluctuations using evfold kirchoff 
 
-#get square fluctuations using custom kirchoff matrix 
-sqf = open('sqflucts_evfold.txt', 'w')
-kirchhoff = parseSparseMatrix('evfold_kirchhoff.txt', symmetric=True)
-#print 'kirchhoff dimensions: ', kirchhoff.shape
-gnm3 = GNM('GNM for RASH_HUMAN (5p21)')
-gnm3.setKirchhoff(kirchhoff)
-gnm3.calcModes()
-sqflucts = calcSqFlucts(gnm3[:])
-for x in sqflucts:
-    sqf.write('%s \n' % (x))
-sqf.close()
+# get square fluctuations using custom kirchoff matrix
+
+with open('sqflucts_evfold.txt', 'w') as sqf:
+    kirchhoff = parseSparseMatrix('evfold_kirchhoff.txt', symmetric=True)
+    gnm3 = GNM('GNM for RASH_HUMAN (5p21)')
+    gnm3.setKirchhoff(kirchhoff)
+    gnm3.calcModes()
+    sqflucts = calcSqFlucts(gnm3[:])
+    for x in sqflucts:
+        sqf.write('%s \n' % (x))
 
 
-# ##Calculate square fluctuations using ProDy matrix
 
+# Calculate square fluctuations using ProDy matrix
 
-sqf1 = open('sqflucts_ProDy.txt', 'w')
-cal = parsePDB(pdbid)
-calphas = cal.select('calpha and chain A')
-gnm1 = GNM('kirchhoff from ProDy')
-gnm1.buildKirchhoff(calphas)
-gnm1.getKirchhoff()
-gnm1.calcModes()
-sqflucts1 = calcSqFlucts(gnm1[:])
-for x in sqflucts1:
-    sqf1.write('%s \n' % (x))
-sqf1.close()
+with open('sqflucts_ProDy.txt', 'w') as sqf1:
+    cal = parsePDB(pdbid)
+    calphas = cal.select('calpha and chain A')
+    gnm1 = GNM('kirchhoff from ProDy')
+    gnm1.buildKirchhoff(calphas)
+    gnm1.getKirchhoff()
+    gnm1.calcModes()
+    sqflucts1 = calcSqFlucts(gnm1[:])
+    for x in sqflucts1:
+        sqf1.write('%s \n' % (x))
 
 
 # ##Calculate b-factors 
 
 
 bfac1 = open('bfactor_ProDy.txt', 'w')
-bfac_exp = open('bfactor_exp.txt', 'w')
-bfac_evfold = open('bfactor_evfold.txt', 'w')
 bfact1 = calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
-bfact_evfold = calcTempFactors(gnm3[:],calphas)
+for x in bfact1:
+    bfac1.write('%s \n' % (x))
+bfac1.close()
+
+
+
+bfac_exp = open('bfactor_exp.txt', 'w')
 bfactexp = calphas.getBetas() # experimental bfactor from pdb
 for x in bfactexp:
     bfac_exp.write('%s \n' % (x))
 bfac_exp.close()
-for x in bfact1:
-    bfac1.write('%s \n' % (x))
-bfac1.close()
+
+
+bfac_evfold = open('bfactor_evfold.txt', 'w')
+bfact_evfold = calcTempFactors(gnm3[:],calphas)
 for x in bfact_evfold:
     bfac_evfold.write('%s \n' % (x))
 bfac_evfold.close()
