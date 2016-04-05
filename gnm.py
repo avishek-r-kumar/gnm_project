@@ -1,10 +1,10 @@
 #!/usr/bin/env python
+
 import numpy as np 
 import matplotlib.pyplot as plt
 import seaborn as sns
-from prody import * #don't pollute the namespace just keep prody object they way they are
+import prody as prdy
 import pandas as pd
-
 
 
 pdbid = '5pnt' #Doesn't make sense
@@ -100,39 +100,39 @@ build_kirchhoff(n) #this part of the code is called but the matrix isn't saved.
 # ##Calculate square fluctuations using evfold kirchoff 
 
 # get square fluctuations using custom kirchoff matrix
-kirchhoff = parseSparseMatrix('evfold_kirchhoff.txt', symmetric=True)
-gnm3 = GNM('GNM for RASH_HUMAN (5p21)')
+kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
+                                   symmetric=True)
+gnm3 = prdy.GNM('GNM for RASH_HUMAN (5p21)')
 gnm3.setKirchhoff(kirchhoff)
 gnm3.calcModes()
-sqflucts = calcSqFlucts(gnm3[:])
+sqflucts = prdy.calcSqFlucts(gnm3[:])
 np.savetxt('sqlflucts_evfold_test.txt',sqflucts)
 
 
 # Calculate square fluctuations using ProDy matrix
-
-cal = parsePDB(pdbid)
+cal = prdy.parsePDB(pdbid)
 calphas = cal.select('calpha and chain A')
-gnm1 = GNM('kirchhoff from ProDy')
+gnm1 = prdy.GNM('kirchhoff from ProDy')
 gnm1.buildKirchhoff(calphas)
 gnm1.getKirchhoff()
 gnm1.calcModes()
-sqflucts1 = calcSqFlucts(gnm1[:])
+sqflucts1 = prdy.calcSqFlucts(gnm1[:])
 np.savetxt('sqflucts_ProDy.txt',sqflucts1)
 
 # Calculate b-factors 
-bfact1 = calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
+bfact1 = prdy.calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
 np.savetxt('bfactor_ProDy.txt',bfact1)
 
 bfactexp = calphas.getBetas() # experimental bfactor from pdb
 np.savetxt('bfactor_exp.txt',bfactexp)
 
-bfact_evfold = calcTempFactors(gnm3[:],calphas)
+bfact_evfold = prdy.calcTempFactors(gnm3[:],calphas)
 np.savetxt('bfactor_evfold.txt',bfact_evfold)
 
 
 
 
-#Calculate correlation coefficients 
+# Calculate correlation coefficients 
 correlation1 = np.corrcoef(bfact1,bfactexp) # ProDy w. Exp
 d1 = correlation1.round(2)[0,1]
 print 'correlation (ProDy vs. exp): ',d1
@@ -146,7 +146,7 @@ d9 = correlation9.round(2)[0,1]
 print 'correlation (EVfold vs. ProDy): ',d9
 
 
-# ##Plot the b-factors 
+# Plot the b-factors 
 sns.set_style('white')
 sns.set_context("poster", font_scale=2.5, rc={"lines.linewidth": 2.25, "lines.markersize": 8 })
 plt.plot(bfact1, color="orange", label='ProDy vs. Experiment Correlation: %0.2f' % d1)
