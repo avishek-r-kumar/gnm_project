@@ -1,4 +1,19 @@
 #!/usr/bin/env python
+"""
+GNM
+===
+
+Description
+-----------
+GNM codes that does something.
+
+Usage
+-----
+```
+./gnm.py 
+```
+
+"""
 
 import numpy as np 
 import matplotlib.pyplot as plt
@@ -9,8 +24,6 @@ import pandas as pd
 
 pdbid = '5pnt' #Doesn't make sense
 n = 158 #magic number
-#how to choose the correct value for n?
-
 
 # ##Build kirchoff matrix using EVfold contacts
 def build_kirchhoff(n):
@@ -101,7 +114,7 @@ build_kirchhoff(n) #this part of the code is called but the matrix isn't saved.
 
 # get square fluctuations using custom kirchoff matrix
 kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
-                                   symmetric=True)
+                                  symmetric=True)
 gnm3 = prdy.GNM('GNM for RASH_HUMAN (5p21)')
 gnm3.setKirchhoff(kirchhoff)
 gnm3.calcModes()
