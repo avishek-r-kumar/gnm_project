@@ -1,16 +1,29 @@
 #!/usr/bin/env python
+"""
+GNM
+===
+
+Description
+-----------
+GNM codes that does something.
+
+Usage
+-----
+```
+./gnm.py 
+```
+
+"""
+
 import numpy as np 
 import matplotlib.pyplot as plt
 import seaborn as sns
-from prody import * #don't pollute the namespace just keep prody object they way they are
+import prody as prdy
 import pandas as pd
-
 
 
 pdbid = '5pnt' #Doesn't make sense
 n = 158 #magic number
-#how to choose the correct value for n?
-
 
 # ##Build kirchoff matrix using EVfold contacts
 def build_kirchhoff(n):
@@ -100,59 +113,39 @@ build_kirchhoff(n) #this part of the code is called but the matrix isn't saved.
 # ##Calculate square fluctuations using evfold kirchoff 
 
 # get square fluctuations using custom kirchoff matrix
-
-with open('sqflucts_evfold.txt', 'w') as sqf:
-    kirchhoff = parseSparseMatrix('evfold_kirchhoff.txt', symmetric=True)
-    gnm3 = GNM('GNM for RASH_HUMAN (5p21)')
-    gnm3.setKirchhoff(kirchhoff)
-    gnm3.calcModes()
-    sqflucts = calcSqFlucts(gnm3[:])
-    for x in sqflucts:
-        sqf.write('%s \n' % (x))
-
+kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
+                                  symmetric=True)
+gnm3 = prdy.GNM('GNM for RASH_HUMAN (5p21)')
+gnm3.setKirchhoff(kirchhoff)
+gnm3.calcModes()
+sqflucts = prdy.calcSqFlucts(gnm3[:])
+np.savetxt('sqlflucts_evfold_test.txt',sqflucts)
 
 
 # Calculate square fluctuations using ProDy matrix
+cal = prdy.parsePDB(pdbid)
+calphas = cal.select('calpha and chain A')
+gnm1 = prdy.GNM('kirchhoff from ProDy')
+gnm1.buildKirchhoff(calphas)
+gnm1.getKirchhoff()
+gnm1.calcModes()
+sqflucts1 = prdy.calcSqFlucts(gnm1[:])
+np.savetxt('sqflucts_ProDy.txt',sqflucts1)
 
-with open('sqflucts_ProDy.txt', 'w') as sqf1:
-    cal = parsePDB(pdbid)
-    calphas = cal.select('calpha and chain A')
-    gnm1 = GNM('kirchhoff from ProDy')
-    gnm1.buildKirchhoff(calphas)
-    gnm1.getKirchhoff()
-    gnm1.calcModes()
-    sqflucts1 = calcSqFlucts(gnm1[:])
-    for x in sqflucts1:
-        sqf1.write('%s \n' % (x))
+# Calculate b-factors 
+bfact1 = prdy.calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
+np.savetxt('bfactor_ProDy.txt',bfact1)
 
-
-# ##Calculate b-factors 
-
-
-bfac1 = open('bfactor_ProDy.txt', 'w')
-bfact1 = calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
-for x in bfact1:
-    bfac1.write('%s \n' % (x))
-bfac1.close()
-
-
-
-bfac_exp = open('bfactor_exp.txt', 'w')
 bfactexp = calphas.getBetas() # experimental bfactor from pdb
-for x in bfactexp:
-    bfac_exp.write('%s \n' % (x))
-bfac_exp.close()
+np.savetxt('bfactor_exp.txt',bfactexp)
+
+bfact_evfold = prdy.calcTempFactors(gnm3[:],calphas)
+np.savetxt('bfactor_evfold.txt',bfact_evfold)
 
 
-bfac_evfold = open('bfactor_evfold.txt', 'w')
-bfact_evfold = calcTempFactors(gnm3[:],calphas)
-for x in bfact_evfold:
-    bfac_evfold.write('%s \n' % (x))
-bfac_evfold.close()
 
 
-#Calculate correlation coefficients 
-
+# Calculate correlation coefficients 
 correlation1 = np.corrcoef(bfact1,bfactexp) # ProDy w. Exp
 d1 = correlation1.round(2)[0,1]
 print 'correlation (ProDy vs. exp): ',d1
@@ -166,9 +159,7 @@ d9 = correlation9.round(2)[0,1]
 print 'correlation (EVfold vs. ProDy): ',d9
 
 
-# ##Plot the b-factors 
-
-
+# Plot the b-factors 
 sns.set_style('white')
 sns.set_context("poster", font_scale=2.5, rc={"lines.linewidth": 2.25, "lines.markersize": 8 })
 plt.plot(bfact1, color="orange", label='ProDy vs. Experiment Correlation: %0.2f' % d1)

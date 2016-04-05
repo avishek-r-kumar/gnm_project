@@ -5,4 +5,6 @@ AUTHORS
 -------
 
 - Brandon Butler
-- Avishek Kumar 
+- Avishek Kumar
+
+ 
