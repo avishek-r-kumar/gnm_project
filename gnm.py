@@ -100,59 +100,39 @@ build_kirchhoff(n) #this part of the code is called but the matrix isn't saved.
 # ##Calculate square fluctuations using evfold kirchoff 
 
 # get square fluctuations using custom kirchoff matrix
-
-with open('sqflucts_evfold.txt', 'w') as sqf:
-    kirchhoff = parseSparseMatrix('evfold_kirchhoff.txt', symmetric=True)
-    gnm3 = GNM('GNM for RASH_HUMAN (5p21)')
-    gnm3.setKirchhoff(kirchhoff)
-    gnm3.calcModes()
-    sqflucts = calcSqFlucts(gnm3[:])
-    for x in sqflucts:
-        sqf.write('%s \n' % (x))
-
+kirchhoff = parseSparseMatrix('evfold_kirchhoff.txt', symmetric=True)
+gnm3 = GNM('GNM for RASH_HUMAN (5p21)')
+gnm3.setKirchhoff(kirchhoff)
+gnm3.calcModes()
+sqflucts = calcSqFlucts(gnm3[:])
+np.savetxt('sqlflucts_evfold_test.txt',sqflucts)
 
 
 # Calculate square fluctuations using ProDy matrix
 
-with open('sqflucts_ProDy.txt', 'w') as sqf1:
-    cal = parsePDB(pdbid)
-    calphas = cal.select('calpha and chain A')
-    gnm1 = GNM('kirchhoff from ProDy')
-    gnm1.buildKirchhoff(calphas)
-    gnm1.getKirchhoff()
-    gnm1.calcModes()
-    sqflucts1 = calcSqFlucts(gnm1[:])
-    for x in sqflucts1:
-        sqf1.write('%s \n' % (x))
+cal = parsePDB(pdbid)
+calphas = cal.select('calpha and chain A')
+gnm1 = GNM('kirchhoff from ProDy')
+gnm1.buildKirchhoff(calphas)
+gnm1.getKirchhoff()
+gnm1.calcModes()
+sqflucts1 = calcSqFlucts(gnm1[:])
+np.savetxt('sqflucts_ProDy.txt',sqflucts1)
 
-
-# ##Calculate b-factors 
-
-
-bfac1 = open('bfactor_ProDy.txt', 'w')
+# Calculate b-factors 
 bfact1 = calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
-for x in bfact1:
-    bfac1.write('%s \n' % (x))
-bfac1.close()
+np.savetxt('bfactor_ProDy.txt',bfact1)
 
-
-
-bfac_exp = open('bfactor_exp.txt', 'w')
 bfactexp = calphas.getBetas() # experimental bfactor from pdb
-for x in bfactexp:
-    bfac_exp.write('%s \n' % (x))
-bfac_exp.close()
+np.savetxt('bfactor_exp.txt',bfactexp)
 
-
-bfac_evfold = open('bfactor_evfold.txt', 'w')
 bfact_evfold = calcTempFactors(gnm3[:],calphas)
-for x in bfact_evfold:
-    bfac_evfold.write('%s \n' % (x))
-bfac_evfold.close()
+np.savetxt('bfactor_evfold.txt',bfact_evfold)
+
+
 
 
 #Calculate correlation coefficients 
-
 correlation1 = np.corrcoef(bfact1,bfactexp) # ProDy w. Exp
 d1 = correlation1.round(2)[0,1]
 print 'correlation (ProDy vs. exp): ',d1
@@ -167,8 +147,6 @@ print 'correlation (EVfold vs. ProDy): ',d9
 
 
 # ##Plot the b-factors 
-
-
 sns.set_style('white')
 sns.set_context("poster", font_scale=2.5, rc={"lines.linewidth": 2.25, "lines.markersize": 8 })
 plt.plot(bfact1, color="orange", label='ProDy vs. Experiment Correlation: %0.2f' % d1)
