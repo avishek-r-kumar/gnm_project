@@ -149,8 +149,33 @@ def calc_bfactors_from_pdb(pdbid):
     return calphas.getBetas() # experimental bfactor from pdb
 
 
+def calc_bfactors_from_evoD(pdbid):
+    """
+    Calculate b-factors from evoD 
+    
+    Input
+    -----
+    pdbid: fname or pdbID
+       PDB file or pdbID 
 
-build_kirchhoff(n) #this part of the code is called but the matrix
+    Output
+    ------
+    bfact_evfold: numpy 
+       bfactors calculated from the alpha carbon network 
+    """
+    calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
+    build_kirchhoff(n) #this part of the code is called but the matrix
+    
+    kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
+                                  symmetric=True)
+    gnm3 = prdy.GNM('GNM for RASH_HUMAN (5p21)')
+    gnm3.setKirchhoff(kirchhoff)
+    gnm3.calcModes()
+    return prdy.calcTempFactors(gnm3[:],calphas)
+
+
+
+
 #isn't saved.
 bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
 np.savetxt('bfactor_ProDy.txt',bfact_alphaCA)
@@ -160,15 +185,14 @@ calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
 bfact_exp = calc_bfactors_from_pdb(pdbid)
 np.savetxt('bfactor_exp.txt',bfact_exp)
 
-# ##Calculate square fluctuations using evfold kirchoff 
-# get square fluctuations using custom kirchoff matrix
-#this is the evolutionary part 
-kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
-                                  symmetric=True)
-gnm3 = prdy.GNM('GNM for RASH_HUMAN (5p21)')
-gnm3.setKirchhoff(kirchhoff)
-gnm3.calcModes()
-bfact_evfold = prdy.calcTempFactors(gnm3[:],calphas)
+
+
+#kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
+#                                  symmetric=True)
+#gnm3 = prdy.GNM('GNM for RASH_HUMAN (5p21)')
+#gnm3.setKirchhoff(kirchhoff)
+#gnm3.calcModes()
+bfact_evfold = calc_bfactors_from_evoD(pdbid)
 np.savetxt('bfactor_evfold.txt',bfact_evfold)
 
 
