@@ -114,11 +114,11 @@ build_kirchhoff(n) #this part of the code is called but the matrix isn't saved.
 
 #bfactor from hessian 
 calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
-gnm1 = prdy.GNM('kirchhoff from ProDy')
+gnm1 = prdy.GNM()
 gnm1.buildKirchhoff(calphas)
 gnm1.calcModes()
-sqflucts1 = prdy.calcSqFlucts(gnm1[:]) #bfactor from the hessian
-np.savetxt('sqflucts_ProDy.txt',sqflucts1)
+#sqflucts1 = prdy.calcSqFlucts(gnm1[:]) #bfactor from the hessian
+#np.savetxt('sqflucts_ProDy.txt',sqflucts1)
 bfact1 = prdy.calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
 np.savetxt('bfactor_ProDy.txt',bfact1)
 
