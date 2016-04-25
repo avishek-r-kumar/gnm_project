@@ -196,7 +196,7 @@ def calc_bfactors(pdbid,evod_fname):
 
     bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
     bfact_exp = calc_bfactors_from_pdb(pdbid)
-    bfact_evfold = calc_bfactors_from_evoD(pdbid,'./data/5pnt_MI_DI.txt')
+    bfact_evfold = calc_bfactors_from_evoD(pdbid,evod_fname)
 
     df_bfactor = pd.DataFrame()
     df_bfactor['bfact_alphaCA'] = bfact_alphaCA
