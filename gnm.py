@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import prody as prdy
 import pandas as pd
+import sys 
 
 
 pdbid = '5pnt' #Doesn't make sense
@@ -209,9 +210,11 @@ def calc_bfactors(pdbid,evod_fname):
 
 if __name__ == "__main__":
 
+    pdbid = sys.argv[1]
+    evod_fname = sys.argv[2]
 
     bfact_alphaCA, bfact_exp,bfact_evfold = calc_bfactors(
-        pdbid,'./data/5pnt_MI_DI.txt')
+        pdbid,evod_fname)
 
     # Calculate correlation coefficients 
     correlation1 = np.corrcoef(bfact_alphaCA,bfact_exp) # ProDy w. Exp
