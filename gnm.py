@@ -117,8 +117,6 @@ calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
 gnm1 = prdy.GNM()
 gnm1.buildKirchhoff(calphas)
 gnm1.calcModes()
-#sqflucts1 = prdy.calcSqFlucts(gnm1[:]) #bfactor from the hessian
-#np.savetxt('sqflucts_ProDy.txt',sqflucts1)
 bfact_alphaCA = prdy.calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
 np.savetxt('bfactor_ProDy.txt',bfact_alphaCA)
 
@@ -134,8 +132,6 @@ kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
 gnm3 = prdy.GNM('GNM for RASH_HUMAN (5p21)')
 gnm3.setKirchhoff(kirchhoff)
 gnm3.calcModes()
-sqflucts = prdy.calcSqFlucts(gnm3[:])
-np.savetxt('sqlflucts_evfold_test.txt',sqflucts)
 bfact_evfold = prdy.calcTempFactors(gnm3[:],calphas)
 np.savetxt('bfactor_evfold.txt',bfact_evfold)
 
