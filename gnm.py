@@ -24,9 +24,8 @@ import prody as prdy
 import pandas as pd
 import sys 
 
+import dfi.pdbio as io 
 
-pdbid = '5pnt' #Doesn't make sense
-n = 158 #magic number
 
 # ##Build kirchoff matrix using EVfold contacts
 def build_kirchhoff(evod_file,n):
@@ -150,7 +149,7 @@ def calc_bfactors_from_pdb(pdbid):
     return calphas.getBetas() # experimental bfactor from pdb
 
 
-def calc_bfactors_from_evoD(pdbid,evod_fname):
+def calc_bfactors_from_evoD(pdbid,evod_fname,nres):
     """
     Calculate b-factors from evoD 
     
@@ -165,6 +164,7 @@ def calc_bfactors_from_evoD(pdbid,evod_fname):
        bfactors calculated from the alpha carbon network 
     """
     calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
+    n = nres + 1 
     build_kirchhoff(evod_fname,n) 
     
     kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
@@ -176,7 +176,7 @@ def calc_bfactors_from_evoD(pdbid,evod_fname):
 
 
 
-def calc_bfactors(pdbid,evod_fname):
+def calc_bfactors(pdbid,evod_fname,nres):
     """
     Calculate b-factors from pdb, kirchoff and evod
 
@@ -197,7 +197,7 @@ def calc_bfactors(pdbid,evod_fname):
 
     bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
     bfact_exp = calc_bfactors_from_pdb(pdbid)
-    bfact_evfold = calc_bfactors_from_evoD(pdbid,evod_fname)
+    bfact_evfold = calc_bfactors_from_evoD(pdbid,evod_fname,nres)
 
     df_bfactor = pd.DataFrame()
     df_bfactor['bfact_alphaCA'] = bfact_alphaCA
@@ -212,9 +212,11 @@ if __name__ == "__main__":
 
     pdbid = sys.argv[1]
     evod_fname = sys.argv[2]
-
+    ATOMS = io.pdb_reader(pdbid,CAonly=True)
+    nres = len(ATOMS)
+    
     bfact_alphaCA, bfact_exp,bfact_evfold = calc_bfactors(
-        pdbid,evod_fname)
+        pdbid,evod_fname,nres)
 
     # Calculate correlation coefficients 
     correlation1 = np.corrcoef(bfact_alphaCA,bfact_exp) # ProDy w. Exp
@@ -238,7 +240,7 @@ if __name__ == "__main__":
     plt.plot(bfact_exp, color="black", label='Experiment')
     plt.xlabel('Residue Index')
     plt.ylabel('B-factor')
-    plt.xlim(-2.0,n)
+    plt.xlim(-2.0,nres)
     plt.ylim(0,100)
     plt.legend(loc="upper right",fontsize='large')
     plt.legend(loc=1,prop={'size':16})
