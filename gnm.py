@@ -131,6 +131,24 @@ def calc_bfactors_from_alphaCAs(pdbid):
     gnm1.calcModes()
     return prdy.calcTempFactors(gnm1[:],calphas) 
 
+def calc_bfactors_from_pdb(pdbid):
+    """
+    Pull out b-facotrs from the PDB file 
+    
+    Input
+    -----
+    pdbid: fname or pdbID
+       PDB file or pdbID 
+
+    Output
+    ------
+    bfact_exp: numpy 
+       bfactors calculated from the alpha carbon network 
+    """
+    calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
+    return calphas.getBetas() # experimental bfactor from pdb
+
+
 
 build_kirchhoff(n) #this part of the code is called but the matrix
 #isn't saved.
@@ -139,7 +157,7 @@ np.savetxt('bfactor_ProDy.txt',bfact_alphaCA)
 
 #bfactor from experiment
 calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
-bfactexp = calphas.getBetas() # experimental bfactor from pdb
+bfactexp = calc_bfactors_from_pdb(pdbid)
 np.savetxt('bfactor_exp.txt',bfactexp)
 
 # ##Calculate square fluctuations using evfold kirchoff 
