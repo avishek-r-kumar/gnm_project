@@ -119,8 +119,8 @@ gnm1.buildKirchhoff(calphas)
 gnm1.calcModes()
 #sqflucts1 = prdy.calcSqFlucts(gnm1[:]) #bfactor from the hessian
 #np.savetxt('sqflucts_ProDy.txt',sqflucts1)
-bfact1 = prdy.calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
-np.savetxt('bfactor_ProDy.txt',bfact1)
+bfact_alphaCA = prdy.calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
+np.savetxt('bfactor_ProDy.txt',bfact_alphaCA)
 
 #bfactor from experiment 
 bfactexp = calphas.getBetas() # experimental bfactor from pdb
@@ -142,7 +142,7 @@ np.savetxt('bfactor_evfold.txt',bfact_evfold)
 
 
 # Calculate correlation coefficients 
-correlation1 = np.corrcoef(bfact1,bfactexp) # ProDy w. Exp
+correlation1 = np.corrcoef(bfact_alphaCA,bfactexp) # ProDy w. Exp
 d1 = correlation1.round(2)[0,1]
 print 'correlation (ProDy vs. exp): ',d1
 
@@ -150,7 +150,7 @@ correlation8 = np.corrcoef(bfact_evfold,bfactexp) # EVfold w. Exp
 d8 = correlation8.round(2)[0,1]
 print 'correlation (EVfold vs. exp): ',d8
 
-correlation9 = np.corrcoef(bfact_evfold,bfact1) # EVfold w. ProDy
+correlation9 = np.corrcoef(bfact_evfold,bfact_alphaCA) # EVfold w. ProDy
 d9 = correlation9.round(2)[0,1]
 print 'correlation (EVfold vs. ProDy): ',d9
 
@@ -158,7 +158,7 @@ print 'correlation (EVfold vs. ProDy): ',d9
 # Plot the b-factors 
 sns.set_style('white')
 sns.set_context("poster", font_scale=2.5, rc={"lines.linewidth": 2.25, "lines.markersize": 8 })
-plt.plot(bfact1, color="orange", label='ProDy vs. Experiment Correlation: %0.2f' % d1)
+plt.plot(bfact_alphaCA, color="orange", label='ProDy vs. Experiment Correlation: %0.2f' % d1)
 plt.plot(bfact_evfold, color="blue", label='EVfold vs. Experiment Correlation: %0.2f' % d8)
 plt.plot(bfactexp, color="black", label='Experiment')
 plt.xlabel('Residue Index')
