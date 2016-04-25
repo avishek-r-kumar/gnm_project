@@ -199,16 +199,11 @@ def calc_bfactors(pdbid,evod_fname,nres):
     bfact_exp = calc_bfactors_from_pdb(pdbid)
     bfact_evfold = calc_bfactors_from_evoD(pdbid,evod_fname,nres)
 
-    df_bfactor = pd.DataFrame()
-    df_bfactor['bfact_alphaCA'] = bfact_alphaCA
-    df_bfactor['bfact_exp'] = bfact_exp
-    df_bfactor['bfact_evfold'] = bfact_evfold
-    df_bfactor.to_csv(pdbid+'.csv',index=False)
-
     return bfact_alphaCA, bfact_exp, bfact_evfold 
 
-def _writeCSV(**kwargs):
-    pass 
+def _writeCSV(pdbid,**kwargs):
+    df = pd.DataFrame().from_dict(kwargs)
+    df.to_csv(pdbid+'.csv',index=False)
 
 if __name__ == "__main__":
 
@@ -220,10 +215,16 @@ if __name__ == "__main__":
     evod_fname = sys.argv[2]
     ATOMS = io.pdb_reader(pdbid,CAonly=True,chainA=True,chain_name='A')
     nres = len(ATOMS)
+
     
     bfact_alphaCA, bfact_exp,bfact_evfold = calc_bfactors(
         pdbid,evod_fname,nres)
+    _writeCSV(pdbid,
+              bfact_alphaCA=bfact_alphaCA,
+              bfact_exp=bfact_exp,
+              bfact_evfold=bfact_evfold)
 
+    
     # Calculate correlation coefficients 
     correlation1 = np.corrcoef(bfact_alphaCA,bfact_exp) # ProDy w. Exp
     d1 = correlation1.round(2)[0,1]
