@@ -207,35 +207,38 @@ def calc_bfactors(pdbid,evod_fname):
     return bfact_alphaCA, bfact_exp, bfact_evfold 
 
 
-bfact_alphaCA, bfact_exp,bfact_evfold = calc_bfactors(
-    pdbid,'./data/5pnt_MI_DI.txt')
-
-# Calculate correlation coefficients 
-correlation1 = np.corrcoef(bfact_alphaCA,bfact_exp) # ProDy w. Exp
-d1 = correlation1.round(2)[0,1]
-print 'correlation (ProDy vs. exp): ',d1
-
-correlation8 = np.corrcoef(bfact_evfold,bfact_exp) # EVfold w. Exp
-d8 = correlation8.round(2)[0,1]
-print 'correlation (EVfold vs. exp): ',d8
-
-correlation9 = np.corrcoef(bfact_evfold,bfact_alphaCA) # EVfold w. ProDy
-d9 = correlation9.round(2)[0,1]
-print 'correlation (EVfold vs. ProDy): ',d9
+if __name__ == "__main__":
 
 
-# Plot the b-factors 
-sns.set_style('white')
-sns.set_context("poster", font_scale=2.5, rc={"lines.linewidth": 2.25, "lines.markersize": 8 })
-plt.plot(bfact_alphaCA, color="orange", label='ProDy vs. Experiment Correlation: %0.2f' % d1)
-plt.plot(bfact_evfold, color="blue", label='EVfold vs. Experiment Correlation: %0.2f' % d8)
-plt.plot(bfact_exp, color="black", label='Experiment')
-plt.xlabel('Residue Index')
-plt.ylabel('B-factor')
-plt.xlim(-2.0,n)
-plt.ylim(0,100)
-plt.legend(loc="upper right",fontsize='large')
-plt.legend(loc=1,prop={'size':16})
-plt.tight_layout()
-plt.savefig(pdbid+'-bfactors.png')
+    bfact_alphaCA, bfact_exp,bfact_evfold = calc_bfactors(
+        pdbid,'./data/5pnt_MI_DI.txt')
+
+    # Calculate correlation coefficients 
+    correlation1 = np.corrcoef(bfact_alphaCA,bfact_exp) # ProDy w. Exp
+    d1 = correlation1.round(2)[0,1]
+    print 'correlation (ProDy vs. exp): ',d1
+
+    correlation8 = np.corrcoef(bfact_evfold,bfact_exp) # EVfold w. Exp
+    d8 = correlation8.round(2)[0,1]
+    print 'correlation (EVfold vs. exp): ',d8
+
+    correlation9 = np.corrcoef(bfact_evfold,bfact_alphaCA) # EVfold w. ProDy
+    d9 = correlation9.round(2)[0,1]
+    print 'correlation (EVfold vs. ProDy): ',d9
+
+
+    # Plot the b-factors 
+    sns.set_style('white')
+    sns.set_context("poster", font_scale=2.5, rc={"lines.linewidth": 2.25, "lines.markersize": 8 })
+    plt.plot(bfact_alphaCA, color="orange", label='ProDy vs. Experiment Correlation: %0.2f' % d1)
+    plt.plot(bfact_evfold, color="blue", label='EVfold vs. Experiment Correlation: %0.2f' % d8)
+    plt.plot(bfact_exp, color="black", label='Experiment')
+    plt.xlabel('Residue Index')
+    plt.ylabel('B-factor')
+    plt.xlim(-2.0,n)
+    plt.ylim(0,100)
+    plt.legend(loc="upper right",fontsize='large')
+    plt.legend(loc=1,prop={'size':16})
+    plt.tight_layout()
+    plt.savefig(pdbid+'-bfactors.png')
 
