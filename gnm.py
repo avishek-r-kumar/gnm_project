@@ -157,8 +157,8 @@ np.savetxt('bfactor_ProDy.txt',bfact_alphaCA)
 
 #bfactor from experiment
 calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
-bfactexp = calc_bfactors_from_pdb(pdbid)
-np.savetxt('bfactor_exp.txt',bfactexp)
+bfact_exp = calc_bfactors_from_pdb(pdbid)
+np.savetxt('bfactor_exp.txt',bfact_exp)
 
 # ##Calculate square fluctuations using evfold kirchoff 
 # get square fluctuations using custom kirchoff matrix
@@ -174,11 +174,11 @@ np.savetxt('bfactor_evfold.txt',bfact_evfold)
 
 
 # Calculate correlation coefficients 
-correlation1 = np.corrcoef(bfact_alphaCA,bfactexp) # ProDy w. Exp
+correlation1 = np.corrcoef(bfact_alphaCA,bfact_exp) # ProDy w. Exp
 d1 = correlation1.round(2)[0,1]
 print 'correlation (ProDy vs. exp): ',d1
 
-correlation8 = np.corrcoef(bfact_evfold,bfactexp) # EVfold w. Exp
+correlation8 = np.corrcoef(bfact_evfold,bfact_exp) # EVfold w. Exp
 d8 = correlation8.round(2)[0,1]
 print 'correlation (EVfold vs. exp): ',d8
 
@@ -192,7 +192,7 @@ sns.set_style('white')
 sns.set_context("poster", font_scale=2.5, rc={"lines.linewidth": 2.25, "lines.markersize": 8 })
 plt.plot(bfact_alphaCA, color="orange", label='ProDy vs. Experiment Correlation: %0.2f' % d1)
 plt.plot(bfact_evfold, color="blue", label='EVfold vs. Experiment Correlation: %0.2f' % d8)
-plt.plot(bfactexp, color="black", label='Experiment')
+plt.plot(bfact_exp, color="black", label='Experiment')
 plt.xlabel('Residue Index')
 plt.ylabel('B-factor')
 plt.xlim(-2.0,n)
