@@ -212,7 +212,7 @@ if __name__ == "__main__":
 
     pdbid = sys.argv[1]
     evod_fname = sys.argv[2]
-    ATOMS = io.pdb_reader(pdbid,CAonly=True)
+    ATOMS = io.pdb_reader(pdbid,CAonly=True,chainA=True,chain_name='A')
     nres = len(ATOMS)
     
     bfact_alphaCA, bfact_exp,bfact_evfold = calc_bfactors(
