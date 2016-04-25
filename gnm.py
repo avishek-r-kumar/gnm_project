@@ -211,14 +211,16 @@ if __name__ == "__main__":
         print __doc__
         exit(1)
     
-    pdbid = sys.argv[1]
+    pdb_fname = sys.argv[1]
     evod_fname = sys.argv[2]
-    ATOMS = io.pdb_reader(pdbid,CAonly=True,chainA=True,chain_name='A')
+    pdbid = pdb_fname.split('.')[0]
+    ATOMS = io.pdb_reader(pdb_fname,CAonly=True,chainA=True,
+                          chain_name='A')
     nres = len(ATOMS)
 
     
     bfact_alphaCA, bfact_exp,bfact_evfold = calc_bfactors(
-        pdbid,evod_fname,nres)
+        pdb_fname,evod_fname,nres)
     _writeCSV(pdbid,
               bfact_alphaCA=bfact_alphaCA,
               bfact_exp=bfact_exp,
