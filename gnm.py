@@ -178,15 +178,10 @@ def calc_bfactors_from_evoD(pdbid):
 
 
 bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
-np.savetxt('bfactor_ProDy.txt',bfact_alphaCA)
-
-
 calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
 bfact_exp = calc_bfactors_from_pdb(pdbid)
-np.savetxt('bfactor_exp.txt',bfact_exp)
-
 bfact_evfold = calc_bfactors_from_evoD(pdbid)
-np.savetxt('bfactor_evfold.txt',bfact_evfold)
+
 
 df_bfactor = pd.DataFrame()
 df_bfactor['bfact_alphaCA'] = bfact_alphaCA
