@@ -149,7 +149,7 @@ def calc_bfactors_from_pdb(pdbid):
     return calphas.getBetas() # experimental bfactor from pdb
 
 
-def calc_bfactors_from_evoD(pdbid):
+def calc_bfactors_from_evoD(pdbid,evod_fname):
     """
     Calculate b-factors from evoD 
     
@@ -164,7 +164,7 @@ def calc_bfactors_from_evoD(pdbid):
        bfactors calculated from the alpha carbon network 
     """
     calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
-    build_kirchhoff('./data/5pnt_MI_DI.txt',n) 
+    build_kirchhoff(evod_fname,n) 
     
     kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
                                   symmetric=True)
@@ -179,7 +179,7 @@ def calc_bfactors_from_evoD(pdbid):
 
 bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
 bfact_exp = calc_bfactors_from_pdb(pdbid)
-bfact_evfold = calc_bfactors_from_evoD(pdbid)
+bfact_evfold = calc_bfactors_from_evoD(pdbid,'./data/5pnt_MI_DI.txt')
 
 df_bfactor = pd.DataFrame()
 df_bfactor['bfact_alphaCA'] = bfact_alphaCA
