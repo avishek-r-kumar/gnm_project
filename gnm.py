@@ -110,17 +110,35 @@ def build_kirchhoff(n):
     
     return kirchhoff;
 
-build_kirchhoff(n) #this part of the code is called but the matrix isn't saved.
 
-#bfactor from hessian 
-calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
-gnm1 = prdy.GNM()
-gnm1.buildKirchhoff(calphas)
-gnm1.calcModes()
-bfact_alphaCA = prdy.calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
+def calc_bfactors_from_alphaCAs(pdbid):
+    """
+    Calculate b-factors from the alpha CA network 
+    
+    Input
+    -----
+    pdbid: fname or pdbID
+       PDB file or pdbID 
+
+    Output
+    ------
+    bfact_alphaCA: numpy 
+       bfactors calculated from the alpha carbon network 
+    """
+    calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
+    gnm1 = prdy.GNM()
+    gnm1.buildKirchhoff(calphas)
+    gnm1.calcModes()
+    return prdy.calcTempFactors(gnm1[:],calphas) 
+
+
+build_kirchhoff(n) #this part of the code is called but the matrix
+#isn't saved.
+bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
 np.savetxt('bfactor_ProDy.txt',bfact_alphaCA)
 
-#bfactor from experiment 
+#bfactor from experiment
+calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
 bfactexp = calphas.getBetas() # experimental bfactor from pdb
 np.savetxt('bfactor_exp.txt',bfactexp)
 
