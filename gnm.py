@@ -28,7 +28,7 @@ import dfi.pdbio as io
 
 
 # ##Build kirchoff matrix using EVfold contacts
-def build_kirchhoff(evod_file,n):
+def _build_kirchhoff(evod_file,n):
     """
     Creates a kirchoff matrix using EVfold contacts
 
@@ -165,7 +165,7 @@ def calc_bfactors_from_evoD(pdbid,evod_fname,nres):
     """
     calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
     n = nres + 1 
-    build_kirchhoff(evod_fname,n) 
+    _build_kirchhoff(evod_fname,n) 
     
     kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
                                   symmetric=True)
@@ -207,6 +207,8 @@ def calc_bfactors(pdbid,evod_fname,nres):
 
     return bfact_alphaCA, bfact_exp, bfact_evfold 
 
+def _writeCSV(**kwargs):
+    pass 
 
 if __name__ == "__main__":
 
