@@ -178,6 +178,20 @@ def calc_bfactors_from_evoD(pdbid,evod_fname):
 def calc_bfactors(pdbid,evod_fname):
     """
     Calculate b-factors from pdb, kirchoff and evod
+
+    Input
+    -----
+    pdbid: file
+       pdb file 
+    evod_fname: file
+       file containing evoD info 
+
+    Output
+    -----
+    bfact_alphaCA, bfact_exp, bfact_evfold: numpy 
+       numpy array of bfactors 
+    pdbid.csv: file
+       Output file of the bfactor results 
     """
 
     bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
