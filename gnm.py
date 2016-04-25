@@ -176,26 +176,23 @@ def calc_bfactors_from_evoD(pdbid):
 
 
 
-#isn't saved.
+
 bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
 np.savetxt('bfactor_ProDy.txt',bfact_alphaCA)
 
-#bfactor from experiment
+
 calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
 bfact_exp = calc_bfactors_from_pdb(pdbid)
 np.savetxt('bfactor_exp.txt',bfact_exp)
 
-
-
-#kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
-#                                  symmetric=True)
-#gnm3 = prdy.GNM('GNM for RASH_HUMAN (5p21)')
-#gnm3.setKirchhoff(kirchhoff)
-#gnm3.calcModes()
 bfact_evfold = calc_bfactors_from_evoD(pdbid)
 np.savetxt('bfactor_evfold.txt',bfact_evfold)
 
-
+df_bfactor = pd.DataFrame()
+df_bfactor['bfact_alphaCA'] = bfact_alphaCA
+df_bfactor['bfact_exp'] = bfact_exp
+df_bfactor['bfact_evfold'] = bfact_evfold
+df_bfactor.to_csv(pdbid+'.csv',index=False)
 
 # Calculate correlation coefficients 
 correlation1 = np.corrcoef(bfact_alphaCA,bfact_exp) # ProDy w. Exp
