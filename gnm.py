@@ -210,6 +210,10 @@ def calc_bfactors(pdbid,evod_fname,nres):
 
 if __name__ == "__main__":
 
+    if len(sys.argv) < 3:
+        print __doc__
+        exit(1)
+    
     pdbid = sys.argv[1]
     evod_fname = sys.argv[2]
     ATOMS = io.pdb_reader(pdbid,CAonly=True,chainA=True,chain_name='A')
