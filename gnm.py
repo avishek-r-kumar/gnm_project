@@ -178,7 +178,6 @@ def calc_bfactors_from_evoD(pdbid):
 
 
 bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
-calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
 bfact_exp = calc_bfactors_from_pdb(pdbid)
 bfact_evfold = calc_bfactors_from_evoD(pdbid)
 
