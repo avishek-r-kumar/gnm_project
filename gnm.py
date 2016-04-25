@@ -113,8 +113,7 @@ def build_kirchhoff(n):
 build_kirchhoff(n) #this part of the code is called but the matrix isn't saved.
 
 #bfactor from hessian 
-cal = prdy.parsePDB(pdbid)
-calphas = cal.select('calpha and chain A')
+calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
 gnm1 = prdy.GNM('kirchhoff from ProDy')
 gnm1.buildKirchhoff(calphas)
 gnm1.calcModes()
@@ -123,11 +122,9 @@ np.savetxt('sqflucts_ProDy.txt',sqflucts1)
 bfact1 = prdy.calcTempFactors(gnm1[:],calphas) # scaled with exp bfactor
 np.savetxt('bfactor_ProDy.txt',bfact1)
 
-
 #bfactor from experiment 
 bfactexp = calphas.getBetas() # experimental bfactor from pdb
 np.savetxt('bfactor_exp.txt',bfactexp)
-
 
 # ##Calculate square fluctuations using evfold kirchoff 
 # get square fluctuations using custom kirchoff matrix
