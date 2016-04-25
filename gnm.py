@@ -12,7 +12,7 @@ EvFold. https://github.com/avishek-r-kumar/gnm_project.git
 Usage
 -----
 ```
-./gnm.py 
+./gnm.py pdbid evfold 
 ```
 
 """
@@ -175,17 +175,26 @@ def calc_bfactors_from_evoD(pdbid,evod_fname):
 
 
 
+def calc_bfactors(pdbid,evod_fname):
+    """
+    Calculate b-factors from pdb, kirchoff and evod
+    """
+
+    bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
+    bfact_exp = calc_bfactors_from_pdb(pdbid)
+    bfact_evfold = calc_bfactors_from_evoD(pdbid,'./data/5pnt_MI_DI.txt')
+
+    df_bfactor = pd.DataFrame()
+    df_bfactor['bfact_alphaCA'] = bfact_alphaCA
+    df_bfactor['bfact_exp'] = bfact_exp
+    df_bfactor['bfact_evfold'] = bfact_evfold
+    df_bfactor.to_csv(pdbid+'.csv',index=False)
+
+    return bfact_alphaCA, bfact_exp, bfact_evfold 
 
 
-bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
-bfact_exp = calc_bfactors_from_pdb(pdbid)
-bfact_evfold = calc_bfactors_from_evoD(pdbid,'./data/5pnt_MI_DI.txt')
-
-df_bfactor = pd.DataFrame()
-df_bfactor['bfact_alphaCA'] = bfact_alphaCA
-df_bfactor['bfact_exp'] = bfact_exp
-df_bfactor['bfact_evfold'] = bfact_evfold
-df_bfactor.to_csv(pdbid+'.csv',index=False)
+bfact_alphaCA, bfact_exp,bfact_evfold = calc_bfactors(
+    pdbid,'./data/5pnt_MI_DI.txt')
 
 # Calculate correlation coefficients 
 correlation1 = np.corrcoef(bfact_alphaCA,bfact_exp) # ProDy w. Exp
