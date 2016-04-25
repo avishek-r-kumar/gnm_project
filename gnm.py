@@ -28,7 +28,7 @@ pdbid = '5pnt' #Doesn't make sense
 n = 158 #magic number
 
 # ##Build kirchoff matrix using EVfold contacts
-def build_kirchhoff(n):
+def build_kirchhoff(evod_file,n):
     """
     Creates a kirchoff matrix using EVfold contacts
 
@@ -77,7 +77,7 @@ def build_kirchhoff(n):
         
     #assign a -1 for EC pairs
     evol = []
-    contact_pairs = open('./data/5pnt_MI_DI.txt', 'rU').readlines() #Get rid of this hard code
+    contact_pairs = open(evod_file, 'rU').readlines() 
     evol_const = np.zeros((n,n))
     for line in contact_pairs:
         a = line.split()
@@ -164,7 +164,7 @@ def calc_bfactors_from_evoD(pdbid):
        bfactors calculated from the alpha carbon network 
     """
     calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
-    build_kirchhoff(n) #this part of the code is called but the matrix
+    build_kirchhoff('./data/5pnt_MI_DI.txt',n) 
     
     kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
                                   symmetric=True)
@@ -180,7 +180,6 @@ def calc_bfactors_from_evoD(pdbid):
 bfact_alphaCA = calc_bfactors_from_alphaCAs(pdbid)
 bfact_exp = calc_bfactors_from_pdb(pdbid)
 bfact_evfold = calc_bfactors_from_evoD(pdbid)
-
 
 df_bfactor = pd.DataFrame()
 df_bfactor['bfact_alphaCA'] = bfact_alphaCA
