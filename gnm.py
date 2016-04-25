@@ -217,11 +217,14 @@ if __name__ == "__main__":
     ATOMS = io.pdb_reader(pdb_fname,CAonly=True,chainA=True,
                           chain_name='A')
     nres = len(ATOMS)
-
+    res_ind = [atom.res_index for atom in ATOMS]
+    seq = [atom.res_name for atom in ATOMS]
     
     bfact_alphaCA, bfact_exp,bfact_evfold = calc_bfactors(
         pdb_fname,evod_fname,nres)
     _writeCSV(pdbid,
+              ResI = res_ind,
+              Res = seq,
               bfact_alphaCA=bfact_alphaCA,
               bfact_exp=bfact_exp,
               bfact_evfold=bfact_evfold)
