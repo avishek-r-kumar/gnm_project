@@ -81,8 +81,8 @@ def _build_kirchhoff(evod_file,n):
     evol_const = np.zeros((n,n))
     for line in contact_pairs:
         a = line.split()
-        i = int(a[0])
-        j = int(a[2])
+        i = int(a[0]) - 1 
+        j = int(a[2]) - 1 
         if (chain_connection[i, j] != -1):
             evol_const[i, j] = -1.0*float(a[5])
             evol_const[j, i] = -1.0*float(a[5])
@@ -164,7 +164,7 @@ def calc_bfactors_from_evoD(pdbid,evod_fname,nres):
        bfactors calculated from the alpha carbon network 
     """
     calphas = prdy.parsePDB(pdbid).select('calpha and chain A')
-    n = nres + 1 
+    n = nres  
     _build_kirchhoff(evod_fname,n) 
     
     kirchhoff = prdy.parseSparseMatrix('evfold_kirchhoff.txt',
@@ -201,11 +201,48 @@ def calc_bfactors(pdbid,evod_fname,nres):
 
     return bfact_alphaCA, bfact_exp, bfact_evfold 
 
+def calc_hessian(x,y,z):
+    """
+    Calculate the hessian given the coordinates 
+    Inspired by ProDy
+    Input
+    -----
+    (x,y,z) numpy array
+       Must all be the same length
+    Output
+    ------
+    kirchhoff: NxN numpy matrix
+       
+    """
+    cutoff = 10
+    gamma = 1
+    xyz = np.column_stack((x,y,z))
+    numres = xyz.shape[0]
+    kirchhoff = np.zeros((numres,numres))
+    for i in range(numres):
+        print i
+        xyz_i = xyz[i]
+        i_p1 = i + 1
+        xyz_ij = xyz[i_p1:] - xyz_i
+        xyz_ij2=np.multiply(xyz_ij,xyz_ij)
+        cutoff2 = cutoff * cutoff
+        for j, dist2 in enumerate(xyz_ij2.sum(1)):
+            if dist2 > cutoff2:
+                continue
+            if Verbose:
+                print(j, dist2)
+            j += i_p1
+            kirchhoff[i,j] = -gamma 
+            kirchhoff[j,i] = -gamma 
+            kirchhoff[i,i] += gamma 
+            kirchhoff[j,j] += gamma 
+
 def _writeCSV(pdbid,**kwargs):
     df = pd.DataFrame().from_dict(kwargs)
     df.to_csv(pdbid+'.csv',index=False)
 
 if __name__ == "__main__":
+
 
     if len(sys.argv) < 3:
         print __doc__
@@ -213,10 +250,11 @@ if __name__ == "__main__":
     
     pdb_fname = sys.argv[1]
     evod_fname = sys.argv[2]
-    pdbid = pdb_fname.split('.')[0]
+    pdbid = pdb_fname.split('/')[-1].split('.')[0]
     ATOMS = io.pdb_reader(pdb_fname,CAonly=True,chainA=True,
                           chain_name='A')
-    nres = len(ATOMS)
+    #nres = len(ATOMS)
+    nres = 498
     res_ind = [atom.res_index for atom in ATOMS]
     seq = [atom.res_name for atom in ATOMS]
     
