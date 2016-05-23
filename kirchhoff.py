@@ -233,9 +233,9 @@ if __name__ == "__main__":
 
 
 
-    dft['EVfoldR'] = [s for s in aligned['fastaseq']]
-    dft['mdlR'] = [s for s in aligned['mdlseq']]
-    dft['exptR'] = [s for s in aligned['exptseq']]
+    dft['EVfold_R'] = [s for s in aligned['fastaseq']]
+    dft['mdl_R'] = [s for s in aligned['mdlseq']]
+    dft['expt_R'] = [s for s in aligned['exptseq']]
 
 
     #align b-factors with the corresponding sequence 
@@ -266,21 +266,14 @@ if __name__ == "__main__":
 
 
 
-    align_bfac('EVfoldR','EVfoldB',evo_diag,dft)
-    align_bfac('mdlR','mdlB',mdl_diag,dft)
-    align_bfac('exptR','exptB',expt_betafactors,dft)
+    align_bfac('EVfold_R','EVfold_B',evo_diag,dft)
+    align_bfac('mdl_R','mdl_B',mdl_diag,dft)
+    align_bfac('expt_R','expt_B',expt_betafactors,dft)
 
 
-    dft.to_csv('align.csv',index=False)
+    dft.to_csv(exptpdbfile[0:4]+'_align.csv',index=False)
 
-
-
-    dfx.to_csv('DI-bfactor.csv',index=False)
-
-    
-
-    dfx[[i for i in dfx.columns if '_B' in i]].dropna().corr()
-
-
-
-
+    #obtain correlation coefficients
+    correl = dft[[i for i in dft.columns if '_B' in i]].dropna().corr()
+    print(correl)
+    correl.to_csv(exptpdbfile[0:4]+'_corr.csv') 
