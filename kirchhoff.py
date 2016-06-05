@@ -90,32 +90,40 @@ def _build_kirchhoff(evod_file,n):
     chain_connection = np.zeros((n,n))
     
     #assign a -1 for residues in contact in the chain
-    for i in range(2, n-2):
+    for i in range(4, n-4):
         chain_connection[i, i+1] = -1
         chain_connection[i, i+2] = -1
-        #chain_connection[i, i+3] = -1
+        chain_connection[i, i+3] = -1
+        chain_connection[i, i+4] = -1
         chain_connection[i+1, i] = -1
         chain_connection[i+2, i] = -1
-        #chain_connection[i+3, i] = -1
+        chain_connection[i+3, i] = -1
+        chain_connection[i+4, i] = -1
         chain_connection[i, i-1] = -1
         chain_connection[i, i-2] = -1
-        #chain_connection[i, i-3] = -1
+        chain_connection[i, i-3] = -1
+        chain_connection[i, i-4] = -1
         chain_connection[i-1, i] = -1
         chain_connection[i-2, i] = -1
-        #chain_connection[i-3, i] = -1
+        chain_connection[i-3, i] = -1
+        chain_connection[i-4, i] = -1
         
         chain.append([i, i+1, chain_connection[i, i+1]])
         chain.append([i, i+2, chain_connection[i, i+2]])
-        #chain.append([i, i+3, chain_connection[i, i+3]])
+        chain.append([i, i+3, chain_connection[i, i+3]])
+        chain.append([i, i+4, chain_connection[i, i+4]])
         chain.append([i+1, i, chain_connection[i+1, i]])
         chain.append([i+2, i, chain_connection[i+2, i]])
-        #chain.append([i+3, i, chain_connection[i+3, i]])
+        chain.append([i+3, i, chain_connection[i+3, i]])
+        chain.append([i+4, i, chain_connection[i+4, i]])
         chain.append([i, i-1, chain_connection[i, i-1]])
         chain.append([i, i-2, chain_connection[i, i-2]])
-        #chain.append([i, i-3, chain_connection[i, i-3]])
+        chain.append([i, i-3, chain_connection[i, i-3]])
+        chain.append([i, i-4, chain_connection[i, i-4]])
         chain.append([i-1, i, chain_connection[i-1, i]])
         chain.append([i-2, i, chain_connection[i-2, i]])
-        #chain.append([i-3, i, chain_connection[i-3, i]])
+        chain.append([i-3, i, chain_connection[i-3, i]])
+        chain.append([i-4, i, chain_connection[i-4, i]])
         
     #assign a -1 for EC pairs
     evol = []
